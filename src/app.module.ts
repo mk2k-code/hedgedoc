@@ -28,6 +28,7 @@ import authConfig from './config/auth.config';
 import { PrivateApiModule } from './api/private/private-api.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RouterModule, Routes } from 'nest-router';
+import { CliModule } from './cli/cli.module';
 
 const routes: Routes = [
   {
@@ -70,6 +71,7 @@ const routes: Routes = [
     LoggerModule,
     MediaModule,
     AuthModule,
+    CliModule,
   ],
   controllers: [],
   providers: [],
