@@ -46,6 +46,7 @@ describe('NotesService', () => {
   let forbiddenNoteId: string;
 
   beforeEach(async () => {
+    userRepo = new Repository<User>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotesService,
@@ -56,6 +57,10 @@ describe('NotesService', () => {
         {
           provide: getRepositoryToken(Tag),
           useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: userRepo,
         },
       ],
       imports: [
@@ -74,7 +79,7 @@ describe('NotesService', () => {
       .overrideProvider(getRepositoryToken(Tag))
       .useClass(Repository)
       .overrideProvider(getRepositoryToken(User))
-      .useClass(Repository)
+      .useValue(userRepo)
       .overrideProvider(getRepositoryToken(AuthToken))
       .useValue({})
       .overrideProvider(getRepositoryToken(Identity))
@@ -661,6 +666,7 @@ describe('NotesService', () => {
   describe('toNoteMetadataDto', () => {
     it('works', async () => {
       const user = User.create('hardcoded', 'Testy') as User;
+      const author = Author.create(1);
       const otherUser = User.create('other hardcoded', 'Testy2') as User;
       const group = Group.create('testGroup', 'testGroup');
       const content = 'testContent';
@@ -671,14 +677,12 @@ describe('NotesService', () => {
       const revisions = await note.revisions;
       revisions[0].authorships = [
         {
-          user: otherUser,
           revisions: revisions,
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452000),
         } as Authorship,
         {
-          user: user,
           revisions: revisions,
           startPos: 0,
           endPos: 1,
@@ -687,6 +691,16 @@ describe('NotesService', () => {
       ];
       revisions[0].createdAt = new Date(1549312452000);
       jest.spyOn(revisionRepo, 'findOne').mockResolvedValue(revisions[0]);
+      const createQueryBuilder = {
+        innerJoin: () => createQueryBuilder,
+        where: () => createQueryBuilder,
+        getMany: () => [user],
+      };
+      jest
+        .spyOn(userRepo, 'createQueryBuilder')
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .mockImplementation(() => createQueryBuilder);
       note.publicId = 'testId';
       note.alias = 'testAlias';
       note.title = 'testTitle';
@@ -755,14 +769,12 @@ describe('NotesService', () => {
       const revisions = await note.revisions;
       revisions[0].authorships = [
         {
-          user: otherUser,
           revisions: revisions,
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452000),
         } as Authorship,
         {
-          user: user,
           revisions: revisions,
           startPos: 0,
           endPos: 1,
@@ -774,6 +786,16 @@ describe('NotesService', () => {
         .spyOn(revisionRepo, 'findOne')
         .mockResolvedValue(revisions[0])
         .mockResolvedValue(revisions[0]);
+      const createQueryBuilder = {
+        innerJoin: () => createQueryBuilder,
+        where: () => createQueryBuilder,
+        getMany: () => [user],
+      };
+      jest
+        .spyOn(userRepo, 'createQueryBuilder')
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .mockImplementation(() => createQueryBuilder);
       note.publicId = 'testId';
       note.alias = 'testAlias';
       note.title = 'testTitle';
