@@ -667,7 +667,7 @@ describe('NotesService', () => {
     it('works', async () => {
       const user = User.create('hardcoded', 'Testy') as User;
       const author = Author.create(1);
-      const otherUser = User.create('other hardcoded', 'Testy2') as User;
+      author.user = user;
       const group = Group.create('testGroup', 'testGroup');
       const content = 'testContent';
       jest
@@ -681,12 +681,14 @@ describe('NotesService', () => {
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452000),
+          author: author,
         } as Authorship,
         {
           revisions: revisions,
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452001),
+          author: author,
         } as Authorship,
       ];
       revisions[0].createdAt = new Date(1549312452000);
@@ -758,6 +760,8 @@ describe('NotesService', () => {
   describe('toNoteDto', () => {
     it('works', async () => {
       const user = User.create('hardcoded', 'Testy') as User;
+      const author = Author.create(1);
+      author.user = user;
       const otherUser = User.create('other hardcoded', 'Testy2') as User;
       otherUser.userName = 'other hardcoded user';
       const group = Group.create('testGroup', 'testGroup');
@@ -773,12 +777,14 @@ describe('NotesService', () => {
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452000),
+          author: author,
         } as Authorship,
         {
           revisions: revisions,
           startPos: 0,
           endPos: 1,
           updatedAt: new Date(1549312452001),
+          author: author,
         } as Authorship,
       ];
       revisions[0].createdAt = new Date(1549312452000);
