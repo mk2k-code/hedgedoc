@@ -53,6 +53,10 @@ describe('NotesController', () => {
           provide: getRepositoryToken(Tag),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {},
+        },
       ],
       imports: [
         RevisionsModule,
